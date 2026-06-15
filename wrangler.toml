@@ -1,0 +1,22 @@
+name = "payrald-wallet"
+main = "src/index.ts"
+compatibility_date = "2025-06-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+ENVIRONMENT   = "production"
+SQUAD_ENV     = "production"
+SUPABASE_URL  = "https://onxdcikfttdmnhofsuwo.supabase.co"
+EVENT_BUS_URL = "https://events.rald.cloud"
+
+[[routes]]
+pattern = "wallet.pay.rald.cloud/*"
+zone_name = "rald.cloud"
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+# ── Secrets — wrangler secret put <KEY> ────────────────────────────────────────
+# SUPABASE_SERVICE_ROLE_KEY   RALD_JWT_SECRET   MACHINE_IDENTITY_SECRET
+# SQUADCO_SECRET_KEYS         SQUADCO_PUBLIC_KEY
