@@ -1,0 +1,32 @@
+name: Deploy payrald-wallet
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy wallet.pay.rald.cloud
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - run: pnpm install --no-frozen-lockfile
+      - name: Provision secrets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          printf '%s' "${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" | npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY --name payrald-wallet
+          printf '%s' "${{ secrets.RALD_JWT_SECRET }}"           | npx wrangler secret put RALD_JWT_SECRET            --name payrald-wallet
+          printf '%s' "${{ secrets.MACHINE_IDENTITY_SECRET }}"   | npx wrangler secret put MACHINE_IDENTITY_SECRET    --name payrald-wallet
+      - name: Deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: npx wrangler deploy
